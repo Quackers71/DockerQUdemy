@@ -5,3 +5,23 @@ https://github.com/bretfisher/udemy-docker-mastery
 https://github.com/Quackers71/DockerQUdemy
 https://try.github.io/
 
+https://dockermasterychat.herokuapp.com/
+https://dockermastery.slack.com/
+
+https://www.youtube.com/c/BretFisherITPro
+
+# The Big FAQ
+# Section 1, Lecture 7
+https://www.udemy.com/docker-mastery/learn/v4/t/lecture/10091380?start=0
+
+Docker Editions @ https://store.docker.com/
+
+CE vs. EE, Stable vs. Edge
+
+CE = Community Edition
+Edge = Beta Versions
+
+https://store.docker.com/editions/community/docker-ce-desktop-windows
+https://docs.docker.com/toolbox/overview/#whats-in-the-box
+
+C:\Users\Rob\.docker\machine\machines\default\default\Logs
