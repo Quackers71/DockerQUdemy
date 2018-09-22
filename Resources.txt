@@ -25,3 +25,49 @@ https://store.docker.com/editions/community/docker-ce-desktop-windows
 https://docs.docker.com/toolbox/overview/#whats-in-the-box
 
 C:\Users\Rob\.docker\machine\machines\default\default\Logs
+
+# Installing the latest Docker on Linux...
+
+https://get.docker.com/
+curl -fsSL get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker ubuntu # to run docker commands as sudo
+
+# next install docker machine
+https://docs.docker.com/machine/install-machine/
+
+$ base=https://github.com/docker/machine/releases/download/v0.14.0 &&
+  curl -L $base/docker-machine-$(uname -s)-$(uname -m) >/tmp/docker-machine &&
+  sudo install /tmp/docker-machine /usr/local/bin/docker-machine
+
+docker-machine version # to test docker machine has install correctly
+
+# Alternatively for docker machine download via Github
+https://github.com/docker/machine/releases
+
+curl -L https://github.com/docker/machine/releases/download/v0.15.0/docker-machine-$(uname -s)-$(uname -m) >/tmp/docker-machine &&
+chmod +x /tmp/docker-machine &&
+sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
+
+
+# last install docker compose
+https://docs.docker.com/compose/install/#install-compose
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# Alternatively for docker compose download via Github
+https://github.com/docker/compose/releases
+
+sudo -i
+curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+docker-compose version
+
+bretfisher.com/shell/
+
+
+
+
+
+
