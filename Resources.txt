@@ -66,8 +66,215 @@ docker-compose version
 
 bretfisher.com/shell/
 
+## Section: 3
 
+# 19. Starting an Nginx Web Server
 
+docker container run --publish 80:80 --detach nginx
+docker container ls
+docker container stop b48c
 
+docker container run --publish 80:80 --detach --name webhost nginx
+docker container logs webhost
+docker container top webhost
+
+docker container rm dee b48 clf
+
+# 21. Just a Process
+
+docker run --name mongo -d mongo
+docker top mongo
+ps aux | grep mongo
+
+# 23. Assignment: Manage Multiple Containers
+
+docker container run --publish 80:80 --detach --name nginx nginx
+docker container run --publish 8080:80 --detach --name apache httpd
+docker container run -e MYSQL_RANDOM_ROOT_PASSWORD=yes --publish 3306:3306 --detach --name mysql mysql
+docker container ls -a
+
+docker container logs mysql # to obtain the Random Password
+# or
+docker container logs mysql | grep -i password
+
+# to test
+curl localhost      # Nginx
+curl localhost:8080 # Apache
+
+docker container stop mysql apache nginx
+docker container rm mysql apache nginx
+
+docker image ls
+
+# 25. What's going on in Containers: CLI Process Monitoring
+
+docker container run -d --name nginx nginx
+docker container run -d --name mysql -e MYSQL_RANDOM_ROOT_PASSWORD=true mysql
+
+docker container top mysql
+docker container top nginx
+docker container inspect mysql
+docker container inspect nginx
+
+docker container stats
+
+# 26. Getting a Shell inside Containers: No Need for SSH
+
+docker container run -ti --name proxy nginx bash
+
+ubuntu@ip-172-31-27-210:~$ docker container ls -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                     PORTS                 NAMES
+eb58fedf64c9        nginx               "bash"                   48 seconds ago      Exited (0) 6 seconds ago                         proxy
+94fe4f89e829        mysql               "docker-entrypoint.s…"   27 minutes ago      Up 26 minutes              3306/tcp, 33060/tcp   mysql
+34fa91bcea87        nginx               "nginx -g 'daemon of…"   28 minutes ago      Up 28 minutes              80/tcp                nginx
+
+docker container exec -ti ubuntu bash
+
+docker pull alpine
+docker container run -ti alpine sh # use sh as 'bash' is not installed on alpine
+# you use 'apk' command on alpine to update packages
+apk
+
+ubuntu@ip-172-31-27-210:~$ docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+mongo               latest              c1d6c06b5775        3 days ago          381MB
+alpine              latest              196d12cf6ab1        12 days ago         4.41MB
+ubuntu              latest              cd6d8154f1e1        2 weeks ago         84.1MB
+nginx               latest              06144b287844        2 weeks ago         109MB
+mysql               latest              6a834f03bd02        2 weeks ago         484MB
+httpd               latest              d595a4011ae3        2 weeks ago         178MB
+
+# 27. Docker Networks: Concepts for Private and Public Comms in Containers
+
+docker container run -p 80:80 --name webhost -d nginx
+
+docker container port webhost
+docker container inspect --format '{{ .NetworkSettings.IPaddress }}' webhost
+
+# 29. Docker Networks: CLI Management of Virtual Networks
+
+docker container run <stuff> nginx:alpine
+
+docker network ls
+docker network create my_app_net # Creates a bridge
+
+docker container run -d --name new_nginx --network my_app_net nginx
+
+docker network inspect my_app_net
+
+ "Containers": {
+            "fbe031f040c2d55c183123875ae384430b7f14571de64d93c7a0ebcb8baa2e1c": {
+                "Name": "new_nginx",
+                "EndpointID": "3a3ce47daf0ccbdbcf55fc5e4cae513a6b70dc12a8aa1786df5404807c7de4be",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+
+docker network connect my_app_net webhost
+
+docker container inspect webhost
+
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "NetworkID": "1bc967fe8c807b96f79ba8265ede264320f6419daf5dda65b16a44cf82c819ab",
+                    "EndpointID": "a28f80e1f2edbf079576f1ed75b1ce59ae264b712f57ef2db34e3b816e7840b7",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:ac:11:00:02",
+                    "DriverOpts": null
+                },
+                "my_app_net": {
+                    "IPAMConfig": {},
+                    "Links": null,
+                    "Aliases": [
+                        "d9cb19d7609d"
+                    ],
+                    "NetworkID": "5a71a86b8f9368b242d903844466315b7c37d9d67ceb02479745a3352b4f577e",
+                    "EndpointID": "aeaec0ffd88ad6572946abee7d725574e8b4f1a6bf137daa8d8e0b123cc1d970",
+                    "Gateway": "172.18.0.1",
+                    "IPAddress": "172.18.0.3",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:ac:12:00:03",
+                    "DriverOpts": null
+
+docker network disconnect my_app_net webhost
+
+# 30. Docker Networks: DNS and how Containers Find Each Other
+
+ubuntu@ip-172-31-27-210:~$ docker container exec -ti my_nginx ping new_nginx
+PING new_nginx (172.18.0.2): 56 data bytes
+64 bytes from 172.18.0.2: seq=0 ttl=64 time=0.105 ms
+64 bytes from 172.18.0.2: seq=1 ttl=64 time=0.110 ms
+
+ubuntu@ip-172-31-27-210:~$ docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                NAMES
+1438bb16f762        nginx:alpine        "nginx -g 'daemon of…"   About a minute ago   Up About a minute   80/tcp               my_nginx
+e9ee20392aa1        nginx:alpine        "nginx -g 'daemon of…"   3 minutes ago        Up 3 minutes        80/tcp               new_nginx
+d9cb19d7609d        nginx               "nginx -g 'daemon of…"   About an hour ago    Up About an hour    0.0.0.0:80->80/tcp   webhost
+
+# 31. Assignment: Using Containers for CLI 2:30 Testing
+
+docker container run --rm -ti centos:7 bash
+yum update curl
+curl --version
+
+docker container run --rm -ti ubuntu:14.04 bash
+apt-get update && apt-get install -y curl
+curl --version
+
+# 33. Assignment: DNS Round Robin Test
+
+docker container run -d --net dude --net-alias search elasticsearch:2
+ubuntu@ip-172-31-27-210:~$ docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
+cf8c29e96362        elasticsearch:2     "/docker-entrypoint.…"   38 seconds ago      Up 37 seconds       9200/tcp, 9300/tcp   heuristic_minsky
+5832c15bf1bf        elasticsearch:2     "/docker-entrypoint.…"   53 seconds ago      Up 52 seconds       9200/tcp, 9300/tcp   naughty_nightingale
+
+ubuntu@ip-172-31-27-210:~$ docker container run --rm --net dude alpine nslookup search
+nslookup: can't resolve '(null)': Name does not resolve
+
+Name:      search
+Address 1: 172.19.0.2 search.dude
+Address 2: 172.19.0.3 search.dude
+
+ubuntu@ip-172-31-27-210:~$ docker container run --rm --net dude centos curl -s search:9200
+{
+  "name" : "Riot Grrl",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "Wps17Zd-QyiI1TKeyjj0Tg",
+  "version" : {
+    "number" : "2.4.6",
+    "build_hash" : "5376dca9f70f3abef96a77f4bb22720ace8240fd",
+    "build_timestamp" : "2017-07-18T12:17:44Z",
+    "build_snapshot" : false,
+    "lucene_version" : "5.5.4"
+  },
+  "tagline" : "You Know, for Search"
+}
+
+ubuntu@ip-172-31-27-210:~$ docker container rm -f heuristic_minsky naughty_nightingale
+heuristic_minsky
+naughty_nightingale
+
+## Section: 4
+
+# 35. What's In An Image (and What Isn't)
+
+https://github.com/moby/moby/blob/master/image/spec/v1.md
+
+Docker Image Specification v1.0.0
+An Image is an ordered collection of root filesystem changes and the corresponding execution parameters for use within a container runtime. 
+This specification outlines the format of these filesystem changes and corresponding parameters and describes how to create and use them 
+for use with a container runtime and execution tool.
 
 
