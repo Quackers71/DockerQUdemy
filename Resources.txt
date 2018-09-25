@@ -277,4 +277,105 @@ An Image is an ordered collection of root filesystem changes and the correspondi
 This specification outlines the format of these filesystem changes and corresponding parameters and describes how to create and use them 
 for use with a container runtime and execution tool.
 
+# 36. The Mighty Hub: Using Docker Hub Registry Images
+
+ubuntu@ip-172-31-27-210:~$ docker container ls
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+ubuntu@ip-172-31-27-210:~$ docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+mongo               latest              c1d6c06b5775        4 days ago          381MB
+nginx               1.15.3-alpine       994032453556        13 days ago         17.4MB
+alpine              latest              196d12cf6ab1        13 days ago         4.41MB
+ubuntu              14.04               c32fae490809        2 weeks ago         188MB
+ubuntu              latest              cd6d8154f1e1        2 weeks ago         84.1MB
+elasticsearch       2                   5e9d896dc62c        2 weeks ago         479MB
+nginx               latest              06144b287844        2 weeks ago         109MB
+mysql               latest              6a834f03bd02        2 weeks ago         484MB
+httpd               latest              d595a4011ae3        2 weeks ago         178MB
+centos              latest              5182e96772bf        7 weeks ago         200MB
+
+docker pull nginx
+docker pull nginx:1.11.9
+docker pull nginx-alpine
+or
+docker pull nginx:1.15.3-alpine
+
+docker image rm ubuntu:14.04
+
+https://hub.docker.com/explore/
+https://github.com/docker-library/official-images/tree/master/library
+
+# 37. Images and Their Layers: Discover the image Cache
+
+# union filesystem concept
+
+docker history nginx:latest # history of the layers
+docker history mysql:latest
+
+docker image inspect nginx:latest # metadata of the image - 
+
+https://docs.docker.com/storage/storagedriver/
+
+# 38. Image Tagging and Pushing to Docker Hub
+
+docker image tag --help
+docker pull mysql/mysql-server
+docker pull bretfisher/nodemongoapp
+
+ubuntu@ip-172-31-27-210:~$ docker image push quackers101/nginx
+The push refers to repository [docker.io/quackers101/nginx]
+e8916cb59586: Preparing
+3bbff39fa30b: Preparing
+8b15606a9e3e: Preparing
+denied: requested access to the resource is denied
+
+ docker login
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: quackers101
+Password:
+WARNING! Your password will be stored unencrypted in /home/ubuntu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+
+docker image push quackers101/nginx
+
+docker image tag quackers101/nginx quackers101/nginx:testing
+docker image push quackers101/nginx:testing
+
+docker image rm quackers101/nginx:latest
+docker image rm quackers101/nginx:testing
+
+docker pull quackers101/nginx:latest
+docker pull quackers101/nginx:testing
+
+ubuntu@ip-172-31-27-210:~$ docker image ls
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+nginx                     mainline            bc26f1ed35cf        3 hours ago         109MB
+quackers101/nginx         latest              bc26f1ed35cf        3 hours ago         109MB
+quackers101/nginx         testing             bc26f1ed35cf        3 hours ago         109MB
+mongo                     latest              c1d6c06b5775        5 days ago          381MB
+nginx                     1.15.3-alpine       994032453556        13 days ago         17.4MB
+alpine                    latest              196d12cf6ab1        13 days ago         4.41MB
+ubuntu                    latest              cd6d8154f1e1        2 weeks ago         84.1MB
+elasticsearch             2                   5e9d896dc62c        2 weeks ago         479MB
+nginx                     <none>              06144b287844        2 weeks ago         109MB
+mysql                     latest              6a834f03bd02        2 weeks ago         484MB
+httpd                     latest              d595a4011ae3        2 weeks ago         178MB
+mysql/mysql-server        latest              1fdf3806e715        6 weeks ago         309MB
+centos                    latest              5182e96772bf        7 weeks ago         200MB
+bretfisher/nodemongoapp   <none>              ac0ee081b58e        18 months ago       673MB
+
+# 39. Building Images: The Dockerfile Basics
+
+
+
+
+
+
+
+
+
+
 
