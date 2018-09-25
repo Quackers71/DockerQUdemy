@@ -369,7 +369,23 @@ bretfisher/nodemongoapp   <none>              ac0ee081b58e        18 months ago 
 
 # 39. Building Images: The Dockerfile Basics
 
+https://docs.docker.com/engine/reference/builder/
 
+# 40. Building Images: Running Docker Builds
+
+docker image build -t customnginx .
+
+# N.B. things that change the most should be placed at the bottom of the Docker File
+
+# 41. Building Images: Extending Official Images
+
+docker container run -p 80:80 --rm nginx # Standard nginx docker webserver
+
+docker image build -t nginx-with-html .
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/dockerfile-sample-2$ docker container run -p 80:80 --rm nginx-with-html
+
+# 42. Assignment: Build Your Own Dockerfile and Run Containers From It
 
 
 
