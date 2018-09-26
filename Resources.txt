@@ -450,7 +450,36 @@ docker container run --rm -p 80:3000 testnode
 
 # 44. Container Lifetime & Persistant Data: Volumes, Volumes, Volumes
 
+# Links to read up on (and to catch up) :
 
+https://docs.docker.com/engine/reference/builder/
+https://docs.docker.com/storage/storagedriver/
+
+https://www.oreilly.com/ideas/an-introduction-to-immutable-infrastructure
+https://12factor.net/
+https://medium.com/@kelseyhightower/12-fractured-apps-1080c73d481c
+https://docs.docker.com/storage/
+https://github.com/Quackers71/DockerQUdemy/tree/master/All-Course-Slides
+
+# 45. Persistant Data: Data Volumes
+
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+
+docker volume ls
+docker volume inspect 582b89e94c21a15a7029850f11c4e42a8db905efb9777b9f22d8ed0b64e94595
+
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker volume inspect mysql-db
+
+docker container rm -f mysql
+docker container ls
+docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker volume ls
+docker container inspect mysql2
+
+docker volume create --help
+
+# 46. Persistant Data: Bind Mounting
 
 
 
