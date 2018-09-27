@@ -481,7 +481,89 @@ docker volume create --help
 
 # 46. Persistant Data: Bind Mounting
 
+cd udemy-docker-mastery/dockerfile-sample-2/
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/dockerfile-sample-2$ ls -la
+total 20
+drwxrwxr-x  2 ubuntu ubuntu 4096 Sep 27 20:15 .
+drwxrwxr-x 30 ubuntu ubuntu 4096 Sep 22 13:19 ..
+-rw-rw-r--  1 ubuntu ubuntu  414 Sep 22 13:19 Dockerfile
+-rw-rw-r--  1 ubuntu ubuntu  249 Sep 22 13:19 index.html
 
+docker container run -d --name nginx -p 80:80 -v $(pwd):/usr/share/nginx/html nginx # Bind Mounting the Working Directory $(pwd) to /usr/share/nginx/html within the Docker Container
+
+docker container run -d --name nginx2 -p 8080:80 nginx
+# from here
+touch testme.txt
+echo "is it me you're looking for....." > testme.txt
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/dockerfile-sample-2$ ls -la
+total 20
+drwxrwxr-x  2 ubuntu ubuntu 4096 Sep 27 20:15 .
+drwxrwxr-x 30 ubuntu ubuntu 4096 Sep 22 13:19 ..
+-rw-rw-r--  1 ubuntu ubuntu  414 Sep 22 13:19 Dockerfile
+-rw-rw-r--  1 ubuntu ubuntu  249 Sep 22 13:19 index.html
+-rw-rw-r--  1 ubuntu ubuntu   33 Sep 27 20:15 testme.txt
+
+# back to nginx
+docker container exec -ti nginx bash
+cd /usr/share/nginx/html # which is the Bind Mounting 
+ls -la
+root@06a09514eac5:/# cd /usr/share/nginx/html/
+root@06a09514eac5:/usr/share/nginx/html# ls -la
+total 20
+drwxrwxr-x 2 1000 1000 4096 Sep 27 20:15 .
+drwxr-xr-x 3 root root 4096 Sep 25 17:21 ..
+-rw-rw-r-- 1 1000 1000  414 Sep 22 13:19 Dockerfile
+-rw-rw-r-- 1 1000 1000  249 Sep 22 13:19 index.html
+-rw-rw-r-- 1 1000 1000   33 Sep 27 20:15 testme.txt
+
+# 47. Assignment: Database Upgrades with Named Volumes
+
+docker pull postgres:9.6
+docker container run -d --name postgres -v postgres-db:/var/lib/postgresql/data postgres
+
+docker container run -d --name psql -v psql:/var/lib/postgresql/data postgres:9.6
+docker container logs -f psql
+docker container stop psql
+
+docker container run -d --name psql2 -v psql:/var/lib/postgresql/data postgres:9.6
+docker container ps -a
+docker volume ls
+ubuntu@ip-172-31-27-210:~$ docker container logs psql2
+LOG:  database system was shut down at 2018-09-27 22:43:02 UTC
+LOG:  MultiXact member wraparound protections are now enabled
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+
+# 49. Assignment: Edit Code Running in Containers With Bind Mounts
+
+https://hub.docker.com/r/bretfisher/jekyll-serve/
+
+docker run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve
+
+Bundle complete! 4 Gemfile dependencies, 29 gems now installed.
+Bundled gems are installed into `/usr/local/bundle`
+Configuration file: /site/_config.yml
+       Deprecation: The 'gems' configuration option has been renamed to 'plugins'. Please update your config file accordingly.
+            Source: /site
+       Destination: /site/_site
+ Incremental build: disabled. Enable with --incremental
+      Generating...
+       Jekyll Feed: Generating feed for posts
+                    done in 0.459 seconds.
+ Auto-regeneration: enabled for '/site'
+    Server address: http://0.0.0.0:4000/
+  Server running... press ctrl-c to stop.
+      Regenerating: 1 file(s) changed at 2018-09-27 22:58:25
+                    _posts/2017-03-05-welcome-to-jekyll.markdown
+       Jekyll Feed: Generating feed for posts
+                    ...done in 0.117480073 seconds.
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/bindmount-sample-1/_posts$ vim 2017-03-05-welcome-to-jekyll.markdown # made a change to this file and Jekyll appropiated this
+
+## Section: 6
+
+# 51. Docker Compose and The docker-compose.yml File
 
 
 
