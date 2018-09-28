@@ -561,9 +561,123 @@ Configuration file: /site/_config.yml
 
 ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/bindmount-sample-1/_posts$ vim 2017-03-05-welcome-to-jekyll.markdown # made a change to this file and Jekyll appropiated this
 
-## Section: 6
+## Section: 6 Making it Easier with Docker Compose: The Multi-Container Tool
 
 # 51. Docker Compose and The docker-compose.yml File
+
+docker-compose --help
+docker-compose.yml
+docker-compose -f
+
+http://yaml.org/start.html
+http://yaml.org/refcard.html
+https://docs.docker.com/compose/compose-file/compose-versioning/
+https://github.com/docker/compose/releases
+
+https://docs.docker.com/compose/compose-file/
+
+# 52. Trying Out Basic Compose Commands - docker-compose CLI
+
+docker-compose up	# setup volumes/networks and start all containers
+docker-compose down	# stop all containers and remove cont/vol/net
+
+# could be as simple as :
+git clone github.com/some/software
+docker-compose up
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-sample-2$ cat docker-compose.yml
+version: '3'
+
+services:
+  proxy:
+    image: nginx:1.13 # this will use the latest version of 1.13.x
+    ports:
+      - '80:80' # expose 80 on host and sent to 80 in container
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  web:
+    image: httpd  # this will use httpd:latest
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-sample-2$ docker-compose up
+
+# or use
+docker-compose up -d
+docker-compose logs
+
+docker-compose ps
+docker-compose top
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-sample-2$ docker-compose down
+Stopping compose-sample-2_web_1   ... done
+Stopping compose-sample-2_proxy_1 ... done
+Removing compose-sample-2_web_1   ... done
+Removing compose-sample-2_proxy_1 ... done
+Removing network compose-sample-2_default
+
+# 53. Assignment: Build a Compose File For a Multi-Container Service
+
+# 54. Assignment Answers: Build a Compose File For a Multi-Container Service
+
+vim compose-compose.yml # from compose-assignment-2
+
+version: '3'
+
+  services:
+    drupal:
+      image: drupal
+      ports:
+        - "8080:80"
+      volumes:
+        - drupal-modules:/var/www/html/modules
+        - drupal-profiles:/var/www/html/profiles
+        - drupal-sites:/var/www/html/sites
+        - drupal-themes:/var/www/html/themes
+    postgres:
+      image: postgres
+      environment:
+        - POSTGRES_PASSWORD=mypasswd
+
+  volumes:
+    drupal-modules:
+    drupal-profiles:
+    drupal-sites:
+    drupal-themes:
+	
+# Now run :
+
+docker-compose up
+
+# MySite
+
+http://18.130.235.246:8080/
+http://18.130.235.246:8080/node/1
+http://18.130.235.246:8080/node/2
+
+# Madness - Drupal 8 - Bare mininum CMS
+
+docker-compose up -d # to keep it running
+
+# to remove all
+docker-compose down -v # which will remove the volumes
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
+6948572d6dd6        postgres            "docker-entrypoint.s…"   18 minutes ago      Up 41 seconds       5432/tcp               compose-assignment-2_postgres_1
+8992d5fe7569        drupal              "docker-php-entrypoi…"   18 minutes ago      Up 42 seconds       0.0.0.0:8080->80/tcp   compose-assignment-2_drupal_1
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+drupal              latest              d5860b9bd199        13 days ago         446MB
+postgres            latest              084ec18124c8        2 weeks ago         228MB
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker volume ls
+DRIVER              VOLUME NAME
+local               6b7277cde2e63bb21fd2ad8e04427fc9ef50e32012d246428987a021e313f0b5
+local               81cb52f4af8e52b072839d8f41797332dc0dc0baac74a37c7443717c0cda6022
+local               compose-assignment-2_drupal-modules
+local               compose-assignment-2_drupal-profiles
+local               compose-assignment-2_drupal-sites
+local               compose-assignment-2_drupal-themes
+local               mysql-db
+local               psql
+
 
 
 
