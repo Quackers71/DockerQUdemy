@@ -721,8 +721,35 @@ web_1    | [Sat Sep 29 07:41:23.790304 2018] [core:notice] [pid 1:tid 1401691844
 
 docker-compose down
 
-# 56. Assignment: Compose For Run-Time Image Building and Multi-Container Development
+# 56. / 57. Assignment Answer: Compose For Run-Time Image Building and Multi-Container Development
 
+# Use https://codebeautify.org/yaml-validator#
+
+version: '2'
+services:
+    drupal:
+    image: "custom-drupal"
+    build: .
+    ports:
+        - "8080:80"
+volumes:
+    - drupal-modules:/var/www/html/modules
+    - drupal-profiles:/var/www/html/profiles
+    - drupal-sites:/var/www/html/sites
+    - drupal-themes:/var/www/html/themes
+postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_PASSWORD=****
+    volumes:
+      - drupal-data:/var/lib/postgresql/data
+
+volumes:
+    drupal-data:
+    drupal-modules:
+    drupal-profiles:
+    drupal-sites:
+    drupal-themes:
 
 
 
