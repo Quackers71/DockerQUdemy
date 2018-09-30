@@ -634,7 +634,7 @@ version: '3'
     postgres:
       image: postgres
       environment:
-        - POSTGRES_PASSWORD=mypasswd
+        - POSTGRES_PASSWORD=****
 
   volumes:
     drupal-modules:
