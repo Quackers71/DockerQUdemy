@@ -751,6 +751,44 @@ volumes:
     drupal-sites:
     drupal-themes:
 
+## Section: 7 Swarm Intro and Creating a 3-Node Swarm Cluster
+
+# 58. Swarm Mode: Built-In Orchestration
+
+https://www.youtube.com/watch?v=dooPhkXT9yI # Docker 1.12 Swarm Mode Deep Dive Part 1: Topology
+https://www.youtube.com/watch?v=_F6PSP-qhdA # Docker 1.12 Swarm Mode Deep Dive Part 2: Orchestration
+https://speakerdeck.com/aluzzardi/heart-of-the-swarmkit-topology-management
+https://www.youtube.com/watch?v=EmePhjGnCXY # 
+Heart of the SwarmKit: Store, Topology & Object Model
+http://thesecretlivesofdata.com/raft/
+S06 Swarm Intro Slides.pdf
+
+ # 59. Create Your First Service and Scale it Locally
+ 
+docker info # states Swarm: inactive
+
+# So run
+ubuntu@ip-172-31-27-210:~$ docker swarm init
+Swarm initialized: current node (wbs0iwmrbcek6ewe99pqwh5xe) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-4is0iufjr77dowcetdcrkdqr96fkwfd9xs4s2arfg1i0jo0cp9-7zucj4rnmyj3jm70fgqrzx56b 172.31.27.210:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+# docker swarm init: What Just Happened?
+# Lots of PKI and security automation
+# 	Root Signing Certificate created for our Swarm
+#	Certificate is issued for first Manager node
+#	Join tokens are created
+# Raft database created to store root CA, configs and secrets
+#	Encrypted by default on disk (1.13+)
+#	No need for another key/value system to hold orchestration/secrets
+#	Replicates log amongst Managers via mutual TLS in "control plane"
+
+https://docs.docker.com/engine/swarm/services/#service-configuration-details
+
 
 
 
