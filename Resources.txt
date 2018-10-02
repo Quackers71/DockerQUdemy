@@ -903,6 +903,79 @@ Use --detach true  if you're using automation or shell scripts to get things don
                     
 # 61. Creating a 3-Node Swarm Cluster
 
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker swarm init --advertise-addr 172.31.27.210
+Swarm initialized: current node (to9d6po5eypix2xai5ib9c5ob) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-1gx8yntn1kd2gcyjfbsgk7ykwymk1phwt3vyvrsk9yycrqv9jr-6pgpvwvoq6rvc2b3os3b5qk22 172.31.27.210:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+docker swarm join --token SWMTKN-1-1gx8yntn1kd2gcyjfbsgk7ykwymk1phwt3vyvrsk9yycrqv9jr-6pgpvwvoq6rvc2b3os3b5qk22 172.31.27.210:2377
+docker swarm join --token SWMTKN-1-1gx8yntn1kd2gcyjfbsgk7ykwymk1phwt3vyvrsk9yycrqv9jr-6pgpvwvoq6rvc2b3os3b5qk22 172.31.27.210:2377
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+t4fkn75rfc93w6giq0cp03n66     ip-172-31-19-1      Ready               Active                                  18.06.1-ce
+to9d6po5eypix2xai5ib9c5ob *   ip-172-31-27-210    Ready               Active              Leader              18.06.1-ce
+jeayltdzxts2vna9af0jxnuvy     ip-172-31-31-174    Ready               Active                                  18.06.1-ce
+
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+t4fkn75rfc93w6giq0cp03n66     ip-172-31-19-1      Ready               Active              Reachable           18.06.1-ce
+to9d6po5eypix2xai5ib9c5ob *   ip-172-31-27-210    Ready               Active              Leader              18.06.1-ce
+jeayltdzxts2vna9af0jxnuvy     ip-172-31-31-174    Ready               Active                                  18.06.1-ce
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker swarm join-token manager
+To add a manager to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-1gx8yntn1kd2gcyjfbsgk7ykwymk1phwt3vyvrsk9yycrqv9jr-442vrrj3fl3p11sckk8xl8dvv 172.31.27.210:2377
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+t4fkn75rfc93w6giq0cp03n66     ip-172-31-19-1      Ready               Active              Reachable           18.06.1-ce
+to9d6po5eypix2xai5ib9c5ob *   ip-172-31-27-210    Ready               Active              Leader              18.06.1-ce
+jeayltdzxts2vna9af0jxnuvy     ip-172-31-31-174    Down                Active                                  18.06.1-ce
+o8ytygacqnhe1fhrmxi5cln3d     ip-172-31-31-174    Ready               Active              Reachable           18.06.1-ce
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+t4fkn75rfc93w6giq0cp03n66     ip-172-31-19-1      Ready               Active              Reachable           18.06.1-ce
+to9d6po5eypix2xai5ib9c5ob *   ip-172-31-27-210    Ready               Active              Leader              18.06.1-ce
+jeayltdzxts2vna9af0jxnuvy     ip-172-31-31-174    Down                Active                                  18.06.1-ce
+o8ytygacqnhe1fhrmxi5cln3d     ip-172-31-31-174    Ready               Active              Reachable           18.06.1-ce
+
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service create --replicas 3 alpine ping 8.8.8.8
+s8az540d2b35yikisl93reh09
+overall progress: 3 out of 3 tasks
+1/3: running   [==================================================>]
+2/3: running   [==================================================>]
+3/3: running   [==================================================>]
+verify: Service converged
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+s8az540d2b35        competent_cray      replicated          3/3                 alpine:latest
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker node ps
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+ok9jfubzwhxe        competent_cray.2    alpine:latest       ip-172-31-27-210    Running             Running 24 seconds ago
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker node ps ip-172-31-19-1
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+ps6et938q2vy        competent_cray.3    alpine:latest       ip-172-31-19-1      Running             Running 57 seconds ago
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service ps competent_cray
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE                ERROR               PORTS
+j9tsdfoeataq        competent_cray.1    alpine:latest       ip-172-31-31-174    Running             Running about a minute ago
+ok9jfubzwhxe        competent_cray.2    alpine:latest       ip-172-31-27-210    Running             Running about a minute ago
+ps6et938q2vy        competent_cray.3    alpine:latest       ip-172-31-19-1      Running             Running about a minute ago
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$
+
+# Fully operational node cluster
+
+## Section: 8 Swarm Basic Features and How to Use Them In Your Workflow
+
+# 62. Scaling Out with Overlay Networking
+
 
 
 
