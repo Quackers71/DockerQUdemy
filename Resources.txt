@@ -824,6 +824,92 @@ To add a manager to this swarm, run 'docker swarm join-token manager' and follow
 
 https://docs.docker.com/engine/swarm/services/#service-configuration-details
 
+docker swarm --help
+docker node ls
+docker service
+docker service ls
+docker service ps angry_elion
+docker container ls
+docker service update 3jy3s3a1ld25 --replicas 3
+                    
+# FYI
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service create alpine ping 8.8.8.8
+3jy3s3a1ld256zi4o7qeov9c2
+overall progress: 1 out of 1 tasks
+1/1: running   [==================================================>]
+verify: Service converged
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+3jy3s3a1ld25        angry_elion         replicated          1/1                 alpine:latest
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service ps angry_elion
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
+9uy1otetpuzf        angry_elion.1       alpine:latest       ip-172-31-27-210    Running             Running 2 minutes ago
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker container ls
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+9a6986cdc5c2        alpine:latest       "ping 8.8.8.8"      3 minutes ago       Up 3 minutes                            angry_elion.1.9uy1otetpuzfchpcujce7tvq2
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service update 3jy3s3a1ld25 --replicas 3
+3jy3s3a1ld25
+overall progress: 3 out of 3 tasks
+1/3: running   [==================================================>]
+2/3: running   [==================================================>]
+3/3: running   [==================================================>]
+verify: Service converged
+
+# remove a container
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker container rm -f angry_elion.2.f2lc2xrpd0zvf4noxzdikwjy3
+angry_elion.2.f2lc2xrpd0zvf4noxzdikwjy3
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+3jy3s3a1ld25        angry_elion         replicated          2/3                 alpine:latest
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker container ls
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                  PORTS               NAMES
+4e25ac6e8843        alpine:latest       "ping 8.8.8.8"      6 seconds ago       Up Less than a second                       angry_elion.2.r84okrvdzp3zfnz565hbwqe2i
+2c704d0ea25b        alpine:latest       "ping 8.8.8.8"      42 seconds ago      Up 36 seconds                               angry_elion.1.xxwyaqeelh6732k1gsr1vtt39
+7cfd87e14ba0        alpine:latest       "ping 8.8.8.8"      4 minutes ago       Up 4 minutes                                angry_elion.3.f7uco77719i4hrzk5uk3vctw5
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+3jy3s3a1ld25        angry_elion         replicated          3/3                 alpine:latest
+
+# Swarm will replace it 
+# You have to remove the Service
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service rm angry_elion
+angry_elion
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+
+https://docs.docker.com/engine/swarm/services/
+                    
+# 60. UI Change For Service Create/Update
+
+UI Change For Service Create/Update
+Section 7, Lecture 60
+You may notice that when using docker service create  and update , that the CLI acts differently for some Lectures then your own Docker. This is due to a change in the way Docker CLI shows the service commands in 2017.
+
+--detach is a new option that changes the CLI response after you run a command.
+This is a good thing, and doesn't affect the functionality of Swarm. It's just a UI difference. I use various 2017 versions of Docker in this course, so you may see different output for your own service create/update commands vs. mine, which is fine.
+
+History of changes to CLI output for service create/update:
+
+Before 17.05, the service commands would immediately return to your shell prompt and the containers would be scheduled in the background (asynchronously). To check if they deployed properly you would need to use docker service ls and docker service ps.
+Starting in 17.05 the service commands were given a --detach  option, which defaulted to true , but warned you each time about a future change to false . The create/update commands were still asynchronous.
+Starting in 17.10 the --detach  default changes to false , so you'll always see the UI wait synchronously while service tasks are deployed/updated, unless you set --detach true  in each command.
+For all stable versions after 17.12, just remember:
+
+Use the defaults if you're interactive at the CLI, typing commands yourself.
+Use --detach true  if you're using automation or shell scripts to get things done.
+                    
+# 61. Creating a 3-Node Swarm Cluster
+
+
+
+
+
+
+
+
 
 
 
