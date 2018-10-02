@@ -651,6 +651,41 @@ docker-compose up
 http://18.130.235.246:8080/
 http://18.130.235.246:8080/node/1
 http://18.130.235.246:8080/node/2
+                    
+# or Now
+
+http://quackersblog.quackers.ninja/
+
+# Also try ghost.org
+
+https://ghost.org/
+https://hub.docker.com/_/ghost/
+https://docs.ghost.org/docs/config#section-running-ghost-with-config-env-variables
+                    
+version: '3.1'
+
+services:
+
+  ghost:
+    image: ghost:1-alpine
+    restart: always
+    ports:
+      - 80:2368
+    environment:
+      # see https://docs.ghost.org/docs/config#section-running-ghost-with-config-env-variables
+      database__client: mysql
+      database__connection__host: db
+      database__connection__user: root
+      database__connection__password: example
+      database__connection__database: ghost
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+                    
+# then goto: http://quackersblog.quackers.ninja/
 
 # Madness - Drupal 8 - Bare mininum CMS
 
