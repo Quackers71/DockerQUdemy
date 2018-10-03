@@ -791,9 +791,39 @@ volumes:
 # 58. Swarm Mode: Built-In Orchestration
 
 https://www.youtube.com/watch?v=dooPhkXT9yI # Docker 1.12 Swarm Mode Deep Dive Part 1: Topology
+                
+# Docker 1.12 - Topology
+Swarm is contained of Nodes (Node is any type of Machine running Docker)
+Manager Node > RAFT (3, 5, Max 7 Mngrs)
+Worker Node > Gossip (Many)
+No Key Value Store Required - So No infrastucture dependancies required
+If a Manager Node fails the attached Worker Nodes will re-attach to a working Manager Node
+The Manager Nodes have CA built-in
+This is why you use the Join {token} Command i.e. docker swarm join --token ................. 172.31.27.210:2377
+opaque string = fingerprint of Swarm CA + Secret (Manager Node confirms Auth from Worker Node) Worker generates Cert which the Manager confirms with part of the Token
+Default 90 days (3 months) The Worker will generate a new Cert (automated rotation)
+                    
 https://www.youtube.com/watch?v=_F6PSP-qhdA # Docker 1.12 Swarm Mode Deep Dive Part 2: Orchestration
+                    
+# Docker 1.12 - Orchestration
+
+API > Accept & Store >
+Orchestrator <
+Scheduler    > Reconcile
+Dispatcher   > Assign       (Dispatches or removes Tasks)
+Worker > Worker > Worker
+
+Heartbeat (awaiting tasks)
+
+User updates to create more Worker Nodes > API > Orchestator > Scheduler (Creates the Task) > Dispatch
+                    
+
+                    
+                    
 https://speakerdeck.com/aluzzardi/heart-of-the-swarmkit-topology-management
 https://www.youtube.com/watch?v=EmePhjGnCXY # 
+
+                    
 Heart of the SwarmKit: Store, Topology & Object Model
 http://thesecretlivesofdata.com/raft/
 S06 Swarm Intro Slides.pdf
