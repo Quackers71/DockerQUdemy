@@ -3,7 +3,7 @@
 
 https://hub.docker.com/_/drupal/
 
-# or take from the Udemy Docker Captain Course
+# or taken from the Udemy Docker Captain Course
 
 version: '3'
 
