@@ -813,12 +813,9 @@ Scheduler    > Reconcile
 Dispatcher   > Assign       (Dispatches or removes Tasks)
 Worker > Worker > Worker
 
-Heartbeat (awaiting tasks)
+Heartbeat (awaiting tasks) > Dispatcher (If a Worker fails the Dispatcher will pass this back to Orchestrator > Scheduler > Dispatcher)
 
 User updates to create more Worker Nodes > API > Orchestator > Scheduler (Creates the Task) > Dispatch
-                    
-
-                    
                     
 https://speakerdeck.com/aluzzardi/heart-of-the-swarmkit-topology-management
 https://www.youtube.com/watch?v=EmePhjGnCXY # 
@@ -1006,7 +1003,132 @@ ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$
 
 # 62. Scaling Out with Overlay Networking
 
+# Swarm wide Bridge Network
+# Just choose --driver overlay when creating network
+# For Container-to-Container traffic inside a Single Swarm
+# Optional IPSec (AES) Encryption on network creation
+# Each Service can be connected to multiple networks
+# (e.g. front-end, back-end)angular
+                
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker swarm init
+Swarm initialized: current node (s5r5abxnltyjtoucsddlf6mje) is now a manager.
 
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-57g4ifuha7iys3m5oyqa590fduv5reqt43hrl7hkgtya6dautj-czjxarp4v2pxn8ggs26f9ebfj 172.31.27.210:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker network create --driver overlay mydrupal
+2mc74kkupaqc4nfjcljpjh9b7
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+b8576af164d6        bridge              bridge              local
+2f54448a9395        docker_gwbridge     bridge              local
+04ac7e4e31ed        dude                bridge              local
+dd43f68ce7a0        host                host                local
+x8hxs0ry7q4u        ingress             overlay             swarm
+2mc74kkupaqc        mydrupal            overlay             swarm
+fce8681e3c41        none                null                local
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service create --name psql --network mydrupal -e POSTGRES_PASSWORD=**** postgres
+ggsrfbauha8s2xc4nxtm98426
+overall progress: 1 out of 1 tasks
+1/1: running   [==================================================>]
+verify: Service converged
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+ggsrfbauha8s        psql                replicated          1/1                 postgres:latest
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service ps psql
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE                ERROR               PORTS
+51hupb18hdgj        psql.1              postgres:latest     ip-172-31-27-210    Running             Running about a minute ago
+
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker container logs psql.1.51hupb18hdgjghykl04hwrsh2
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting dynamic shared memory implementation ... posix
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+WARNING: enabling "trust" authentication for local connections
+You can change this by editing pg_hba.conf or using the option -A, or
+--auth-local and --auth-host, the next time you run initdb.
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+waiting for server to start....2018-10-04 13:20:24.901 UTC [39] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2018-10-04 13:20:24.922 UTC [40] LOG:  database system was shut down at 2018-10-04 13:20:24 UTC
+2018-10-04 13:20:24.927 UTC [39] LOG:  database system is ready to accept connections
+ done
+server started
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d//* # <<< had to put an extra '/' on the end of here
+
+2018-10-04 13:20:24.991 UTC [39] LOG:  received fast shutdown request
+waiting for server to shut down....2018-10-04 13:20:24.993 UTC [39] LOG:  aborting any active transactions
+2018-10-04 13:20:24.995 UTC [39] LOG:  worker process: logical replication launcher (PID 46) exited with exit code 1
+2018-10-04 13:20:24.998 UTC [41] LOG:  shutting down
+2018-10-04 13:20:25.022 UTC [39] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+2018-10-04 13:20:25.104 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2018-10-04 13:20:25.104 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2018-10-04 13:20:25.108 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2018-10-04 13:20:25.122 UTC [48] LOG:  database system was shut down at 2018-10-04 13:20:25 UTC
+2018-10-04 13:20:25.127 UTC [1] LOG:  database system is ready to accept connections
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service create --name drupal --network mydrupal -p 80:80 drupal
+koshlmkjgia6eqgsgqfbeh753
+overall progress: 1 out of 1 tasks
+1/1: running   [==================================================>]
+verify: Service converged
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+koshlmkjgia6        drupal              replicated          1/1                 drupal:latest       *:80->80/tcp
+ggsrfbauha8s        psql                replicated          1/1                 postgres:latest
+ubuntu@ip-172-31-27-210:~/udemy-docker-mastery/compose-assignment-2$ docker service ps drupal
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
+av2dkhduwinw        drupal.1            drupal:latest       ip-172-31-27-210    Running             Running 3 minutes ago
+
+### ***** Go back and Create the other 2 Instances in AWS and re-create these nodes *****
+# & also checkout S07 Swarm Basic Features Slides.pdf                
+            
+                
+# 63. Scaling Out with Routing Mesh
+                
+# Routing ingress (incoming) packets for a Service to proper Task
+# Spans all nodes in Swarm
+# Uses IPVS from Linux Kernel
+# Load Balances Swarm Services across their Tasks
+# Two ways this works:
+# Container-to-container in a Overlay network (uses VIP)
+# External traffic incoming to published ports (all nodes listen)
+
+
+                
+
+
+
+
+
+                
+                
 
 
 
